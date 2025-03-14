@@ -1,0 +1,13 @@
+山坡地(114山保) VL18251
+山坡地(114水保) VL18252
+農路            VL00451
+農業有機專區    ORGANIC_FARMING
+
+防災資訊/地質圖/25萬分之一地質圖
+水文與集水區/河川排水水道/中央管河川
+水文與集水區/河川排水水道/縣市管河川
+水文與集水區/河川排水水道/水道
+農業與環境/農田水利灌排渠道系統圖
+curl 'https://gis.ardswc.gov.tw/map/php/wms_moeacgs.php?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=canal_public&CRS=EPSG%3A4326&STYLES=&FORMAT_OPTIONS=dpi%3A98&WIDTH=1884&HEIGHT=1426&BBOX=24.637596265342605%2C121.63230782542463%2C24.73953570404038%2C121.76698798146013' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0' -H 'Accept: image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5' -H 'Accept-Language: zh-TW,en-US;q=0.7,en;q=0.3' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'DNT: 1' -H 'Sec-GPC: 1' -H 'Connection: keep-alive' -H 'Referer: https://gis.ardswc.gov.tw/map/' -H 'Cookie: PHPSESSID=k2mpiggo2kkcapjledqm2rjgtp; hash=eyJpdiI6Ijd5UHlNZGYyZ0xaR0RrVmRZbnFRTlE9PSIsInZhbHVlIjoidmhlSmw5TkdQZE1ITmdPUUhaQ0Z5bDZzOTZ6NGhhb0tYV0R5elM4SHdRQXN6QzhUNWpCVTJnUjF4Qk5LVEFtMGxEWkZUZU5EYmplZTFYV1BVa1pvUEE9PSJ9; XSRF-TOKEN=eyJpdiI6ImNSLytxeEJkRGJOREd5NW8xek91d0E9PSIsInZhbHVlIjoicXVmYUFEOWtYQUl4L1VrWmJYWllFR05SOUxjby9rMUJHc1
+
+.shp .json
