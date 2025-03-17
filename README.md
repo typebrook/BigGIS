@@ -2,11 +2,11 @@
 .shp .json
 
 ## data
-山坡地(114山保) http://compute.geodac.tw/vectortiles/shp/VL18251/
-山坡地(114水保) http://compute.geodac.tw/vectortiles/shp/VL18252/
-農路            http://compute.geodac.tw/vectortiles/shp/VL00451/
-                https://gis.ardswc.gov.tw/api/ardswc/vectortiles/shp/farm_road/{z}/{y}/{x}.pbf
-                https://data.moa.gov.tw/OpenData/GetOpenDataFile.aspx?id=A98&FileType=DataMore&RID=41648
+行政及土地區界/山坡地範圍/114...山保    http://compute.geodac.tw/vectortiles/shp/VA18251/
+行政及土地區界/山坡地範圍/114...水保    http://compute.geodac.tw/vectortiles/shp/VA18252/
+路網與地標/農路/農路圖                  http://compute.geodac.tw/vectortiles/shp/VL00451/
+                                        https://gis.ardswc.gov.tw/api/ardswc/vectortiles/shp/farm_road/{z}/{y}/{x}.pbf
+                                        https://data.moa.gov.tw/OpenData/GetOpenDataFile.aspx?id=A98&FileType=DataMore&RID=41648
 農業有機專區    http://compute.geodac.tw/vectortiles/shp/ORGANIC_FARMING/
 
 防災資訊/地質圖/25萬分之一地質圖        https://geodac.ncku.edu.tw/SWCB_LLGIS/地質圖.kml
