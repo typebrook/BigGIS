@@ -1,6 +1,6 @@
 .ONESHELL:
 
-targets = VA18251 VA18252 VL00451
+targets = VA18251 VA18252 VL00451 ORGANIC_FARMING
 
 $(targets): tiles.list
 	<$< xargs -L1 -i echo 'http://compute.geodac.tw/vectortiles/shp/$@/{}' | parallel -j 10 wget -x {}
@@ -27,4 +27,4 @@ $(frompbf).geojson:
 	curl https://geodac.ncku.edu.tw/SWCB_LLGIS/區域排水/區排_縣市管河川.kml -O
 
 水道.kml:
-	https://geodac.ncku.edu.tw/SWCB_LLGIS/區域排水/區排_水道.kml -O
+	curl https://geodac.ncku.edu.tw/SWCB_LLGIS/區域排水/區排_水道.kml -O
