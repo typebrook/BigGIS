@@ -9,11 +9,20 @@ targets: $(targets)
 frompbf = $(addsuffix .geojson, $(targets))
 
 $(frompbf).geojson:
+	export target=$$(cut -d. -f1 <<<$@)
+	echo target $$target >/dev/tty
 	exec 1>$@
 	echo -e '{\n\x20\x20"type":\x20"FeatureCollection",\n\x20\x20"features":\x20['
-	find compute.geodac.tw -type f -name '*pbf' -size +1b | \
-	xargs -i ogr2ogr -f GEOJSON /vsistdout/ {} | \
-	jq -c '.features[]' | \
+	find compute.geodac.tw -type f -path "*$${target}*pbf" -size +1b | \
+	parallel -j8 while read pbf; do
+		tile=$${pbf##*/14/}
+		yx=$${tile%.pbf}
+		IFS=/ read y x <<<$$yx
+		echo -n x $$x y $$y >/dev/tty
+		ogr2ogr -oo X=$$x -oo Y=$$y -oo Z=14 -t_srs EPSG:4326 -f GEOJSON /vsistdout/ $$pbf | \
+		jq -c '.features[]'
+	done | \
+	tee >(nl | head -c500 >/dev/tty) | \
 	sed '$$ !s/$$/,/'
 	echo -e '\x20\x20]\n}'
 
