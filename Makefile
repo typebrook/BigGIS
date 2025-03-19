@@ -26,7 +26,7 @@ $(frompbf):
 	parallel -j8 bash -c
 	find -mindepth 6 -path '*'$$target'*'geojson -exec cat {} \; | \
 	tippecanoe -zg -o $$target.mbtiles --drop-densest-as-needed
-	ogr2ogr -skipfailures $$target.geojson $$target.mbtiles 
+	ogr2ogr -skipfailures $$target.geojson $$target.mbtiles
 
 地質圖.kml:
 	curl https://geodac.ncku.edu.tw/SWCB_LLGIS/地質圖.kml -O
@@ -39,3 +39,15 @@ $(frompbf):
 
 水道.kml:
 	curl https://geodac.ncku.edu.tw/SWCB_LLGIS/區域排水/區排_水道.kml -O
+
+canal.geojson:
+	ogr2ogr -f "GeoJSON" -t_srs EPSG:4326 $@ \
+	WFS:"https://www.iacloud.ia.gov.tw/servergate/sgsgate.ashx/WFS/canal_public?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.1.0&TYPENAME=canal_public&SRSNAME=EPSG:4326&BBOX=23,120,23.5,120.5,EPSG:4326"
+
+shp:
+	ls *geojson | \
+	while IFS=. read layer ext; do
+		ogr2ogr $$layer.shp.zip $$layer.$$ext;
+	done
+
+
