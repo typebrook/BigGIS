@@ -47,7 +47,5 @@ canal.geojson:
 shp:
 	ls *geojson | \
 	while IFS=. read layer ext; do
-		ogr2ogr $$layer.shp.zip $$layer.$$ext;
+		ogr2ogr -oo ISO8859-1 -lco ENCODING=UTF-8 $$layer.shp.zip $$layer.$$ext;
 	done
-
-

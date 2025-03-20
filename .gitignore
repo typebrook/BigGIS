@@ -2,3 +2,8 @@
 *.mbtiles
 *.json
 *.zip
+*.shp
+*.shx
+*.cpg
+*.dbf
+*.prj
