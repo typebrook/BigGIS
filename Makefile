@@ -49,3 +49,6 @@ shp:
 	while IFS=. read layer ext; do
 		ogr2ogr -oo ISO8859-1 -lco ENCODING=UTF-8 $$layer.shp.zip $$layer.$$ext;
 	done
+
+clean:
+	rm *shp *shx *dbf *prj *dbf *geojson *json
