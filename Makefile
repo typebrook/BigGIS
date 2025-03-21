@@ -23,7 +23,7 @@ $(frompbf):
 		COMMAND
 	done | \
 	parallel -j8 bash -c | \
-	ogr2ogr -skipfailures -if GEOJSONSeq $$target.geojson /vsistdin/
+	ogr2ogr -if GEOJSONSeq $$target.geojson /vsistdin?buffer_limit=-1/
 
 地質圖.kml:
 	curl https://geodac.ncku.edu.tw/SWCB_LLGIS/地質圖.kml -O
