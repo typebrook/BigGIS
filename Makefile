@@ -10,6 +10,7 @@ frompbf = $(addsuffix .geojson, $(targets))
 
 $(frompbf):
 	export target=$$(cut -d. -f1 <<<$@)
+	export cols=a_area,autho_name,authority,county,countyname,d_code,gid,p_area,p_date,p_docno,slopeland
 	echo target $$target >/dev/tty
 	find compute.geodac.tw -type f -path "*$${target}*pbf" -size +1b | \
 	nl | \
@@ -19,11 +20,16 @@ $(frompbf):
 		IFS=/ read y x <<<$$yx
 		cat <<-COMMAND
 			echo -en $$num '\t\t' $$yx '\r' >/dev/tty; \
-			ogr2ogr -oo X=$$x -oo Y=$$y -oo Z=14 -t_srs EPSG:4326 -f GEOJSONSeq /vsistdout/ $$pbf
+			ogr2ogr -oo X=$$x -oo Y=$$y -oo Z=14 -t_srs EPSG:4326 -of GeoJSONSeq /vsistdout/ $$pbf
 		COMMAND
 	done | \
 	parallel -j8 bash -c | \
-	ogr2ogr -if GEOJSONSeq $$target.geojson /vsistdin?buffer_limit=-1/
+	tee tmp.geojsonseq | \
+	ogr2ogr \
+		-dialect sqlite \
+		-sql "SELECT $$cols,ST_UNION(geometry) AS geometry from '' GROUP BY $$cols" \
+		$$target.geojson \
+		/vsistdin?buffer_limit=-1/
 
 地質圖.kml:
 	curl https://geodac.ncku.edu.tw/SWCB_LLGIS/地質圖.kml -O
