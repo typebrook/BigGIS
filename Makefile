@@ -19,14 +19,11 @@ $(frompbf):
 		IFS=/ read y x <<<$$yx
 		cat <<-COMMAND
 			echo -en $$num '\t\t' $$yx '\r' >/dev/tty; \
-			ogr2ogr -oo X=$$x -oo Y=$$y -oo Z=14 -t_srs EPSG:4326 -f GEOJSON /vsistdout/ $$pbf | \
-			jq -c '.features[]' >$${pbf%.pbf}.geojson &
+			ogr2ogr -oo X=$$x -oo Y=$$y -oo Z=14 -t_srs EPSG:4326 -f GEOJSONSeq /vsistdout/ $$pbf
 		COMMAND
 	done | \
-	parallel -j8 bash -c
-	find -mindepth 6 -path '*'$$target'*'geojson -exec cat {} \; | \
-	tippecanoe -zg -o $$target.mbtiles --drop-densest-as-needed
-	ogr2ogr -skipfailures $$target.geojson $$target.mbtiles
+	parallel -j8 bash -c | \
+	ogr2ogr -skipfailures -if GEOJSONSeq $$target.geojson /vsistdin/
 
 地質圖.kml:
 	curl https://geodac.ncku.edu.tw/SWCB_LLGIS/地質圖.kml -O
