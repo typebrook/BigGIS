@@ -3,6 +3,14 @@
 z=13
 targets = VA18251 VA18252 VL00451 ORGANIC_FARMING
 
+group_by:
+	cat <<EOF >$@
+		VA18251			p_docno,countyname
+		VA18252			p_docno,countyname
+		VL00451			name
+		ORGANIC_FARMING	'地籍址'
+	EOF
+
 taiwan.outline:
 	curl -sL https://cdn.jsdelivr.net/npm/taiwan-atlas/nation-10t.json | \
 	ogr2ogr -f GEOJSON $@ "/vsistdin?buffer_limit=-1/"
@@ -22,12 +30,12 @@ $(targets): tiles.list
 targets: $(targets)
 frompbf = $(addsuffix .geojson, $(targets))
 
-$(frompbf):
+$(frompbf): group_by
 	export tmp=tmp.geojsonseq
 	#trap 'rm $$tmp 2>/dev/null' EXIT
 	export z=$${z:-$(z)}
 	export target=$$(cut -d. -f1 <<<$@)
-	export cols=a_area,autho_name,authority,county,countyname,d_code,gid,p_area,p_date,p_docno,slopeland
+	export group_by=$$(grep $$target $< | cut -f2)
 	echo target $$target >/dev/tty
 	find compute.geodac.tw/vectortiles/shp/$${target}/$${z} -type f -name "*pbf" -size +1b | \
 	nl | \
@@ -48,9 +56,10 @@ $(frompbf):
 		COMMAND
 	done | \
 	parallel -j8 bash -c >$$tmp
+	fields=$$(head -1 $$tmp | jq -r '.properties|keys[]' | tr '\n' ,)
 	ogr2ogr \
 		-dialect sqlite \
-		-sql "SELECT p_docno,countyname,ST_UNION(geometry) AS geometry from tmp GROUP BY p_docno,countyname" \
+		-sql "SELECT $${fields}ST_UNION(geometry) AS geometry from tmp GROUP BY $${group_by}" \
 		$$target.geojson $$tmp
 
 地質圖.geojson:
