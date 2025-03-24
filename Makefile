@@ -16,7 +16,8 @@ $(targets): tiles.list
 	sed -E 's@^[^0-9]+(.*)[.].*@\1@' $< | \
 	while IFS=/ read -r z x y; do
 		echo http://compute.geodac.tw/vectortiles/shp/$@/$$z/$$y/$$x.pbf
-	done | parallel -j 10 wget -x {}
+	done | \
+	parallel -j8 wget -x {}
 
 targets: $(targets)
 frompbf = $(addsuffix .geojson, $(targets))
@@ -37,7 +38,13 @@ $(frompbf):
 		IFS=/ read y x <<<$$yx
 		cat <<-COMMAND
 			echo -en $$num '\t\t' $$yx '\r' >/dev/tty; \
-			ogr2ogr -oo X=$$x -oo Y=$$y -oo Z=$$z -t_srs EPSG:4326 -of GeoJSONSeq /vsistdout/ $$pbf
+			ogr2ogr \
+				-oo X=$$x \
+				-oo Y=$$y \
+				-oo Z=$$z \
+				-t_srs EPSG:4326 \
+				-of GeoJSONSeq /vsistdout/ \
+				$$pbf
 		COMMAND
 	done | \
 	parallel -j8 bash -c >$$tmp
