@@ -28,9 +28,9 @@ $(targets): tiles.list
 	parallel -j8 wget -x {}
 
 targets: $(targets)
-frompbf = $(addsuffix .geojson, $(targets))
+geojson = $(addsuffix .geojson, $(targets))
 
-$(frompbf): group_by
+$(geojson): group_by
 	export tmp=tmp.geojsonseq
 	#trap 'rm $$tmp 2>/dev/null' EXIT
 	export z=$${z:-$(z)}
@@ -89,4 +89,4 @@ shp:
 	done
 
 clean:
-	rm *shp *shx *dbf *prj *dbf *geojson *json
+	rm *shp *shx *dbf *prj *dbf *cpg *geojson *json
