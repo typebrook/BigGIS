@@ -1,8 +1,10 @@
 .ONESHELL:
 
+# TYPE: PBF tiles
 z=13
 targets = VA18251 VA18252 VL00451 ORGANIC_FARMING
 
+.PHONY: group_by
 group_by:
 	cat <<EOF >$@
 		VA18251			p_docno,countyname
@@ -15,6 +17,7 @@ taiwan.outline:
 	curl -sL https://cdn.jsdelivr.net/npm/taiwan-atlas/nation-10t.json | \
 	ogr2ogr -f GEOJSON $@ "/vsistdin?buffer_limit=-1/"
 
+.PHONY: tiles.list
 tiles.list: taiwan.outline
 	trap 'rm -rf tileset' EXIT
 	ogr2ogr -f MVT -dsco MINZOOM=$(z) -dsco MAXZOOM=$(z) tileset/ $<
@@ -62,6 +65,7 @@ $(geojson): group_by
 		-sql "SELECT $${fields}ST_UNION(geometry) AS geometry from tmp GROUP BY $${group_by}" \
 		$$target.geojson $$tmp
 
+# TYPE: KML
 地質圖.geojson:
 	curl https://geodac.ncku.edu.tw/SWCB_LLGIS/地質圖.kml | \
 	ogr2ogr $@ "/vsistdin?buffer_limit=-1/"
@@ -78,15 +82,37 @@ $(geojson): group_by
 	curl https://geodac.ncku.edu.tw/SWCB_LLGIS/區域排水/區排_水道.kml | \
 	ogr2ogr $@ "/vsistdin?buffer_limit=-1/"
 
+# TYPE: WFS
 canal.geojson:
-	ogr2ogr -f "GeoJSON" -t_srs EPSG:4326 $@ \
-	WFS:"https://www.iacloud.ia.gov.tw/servergate/sgsgate.ashx/WFS/canal_public?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.1.0&TYPENAME=canal_public&SRSNAME=EPSG:4326&BBOX=23,120,23.5,120.5,EPSG:4326"
+	cat <<URL | xargs -i echo -e {}
+	WFS:"\
+		https://www.iacloud.ia.gov.tw/servergate/sgsgate.ashx/WFS/canal_public?\
+		SERVICE=WFS&\
+		REQUEST=GetFeature&\
+		VERSION=1.1.0&\
+		TYPENAME=canal_public&\
+		SRSNAME=EPSG:4326&\
+		BBOX=23,120,23.5,120.5,EPSG:4326\
+	"
+	URL
 
+# OTHERS
 shp:
 	ls *geojson | \
 	while IFS=. read layer ext; do
 		ogr2ogr -oo ISO8859-1 -lco ENCODING=UTF-8 $$layer.shp.zip $$layer.$$ext;
 	done
 
+%.shp.zip: %.geojson
+	ogr2ogr -oo ISO8859-1 -lco ENCODING=UTF-8 $@ $<
+
 clean:
-	rm *shp *shx *dbf *prj *dbf *cpg *geojson *json
+	rm *shp *shp.zip *shx *dbf *prj *dbf *cpg *geojsonseq *json
+
+.PHONY: graph.svg
+graph.svg:
+	~/go/bin/makefile-graph \
+		--makefile ./Makefile \
+		--direction BT | \
+	dot -Tsvg -o $@
+
