@@ -23,23 +23,25 @@ tiles.list: taiwan.outline
 	ogr2ogr -f MVT -dsco MINZOOM=$(z) -dsco MAXZOOM=$(z) tileset/ $<
 	find tileset/ -type f -name '*pbf' >$@
 
-$(targets): tiles.list
+tiles = $(addprefix tile., $(targets))
+$(tiles): tiles.list
+	target=$$(cut -d. -f2 <<<$@)
 	sed -E 's@^[^0-9]+(.*)[.].*@\1@' $< | \
 	while IFS=/ read -r z x y; do
-		echo http://compute.geodac.tw/vectortiles/shp/$@/$$z/$$y/$$x.pbf
+		echo http://compute.geodac.tw/vectortiles/shp/$$target/$$z/$$y/$$x.pbf
 	done | \
 	parallel -j8 wget -x {}
+tiles: $(tiles)
 
-targets: $(targets)
-geojson = $(addsuffix .geojson, $(targets))
-
-$(geojson): group_by
+geojson_from_tiles = $(addsuffix .geojson, $(tiles))
+$(geojson_from_tiles): group_by
+	export target=$$(cut -d. -f2 <<<$@)
+	echo target $$target >/dev/tty
+	[ -d compute.geodac.tw/vectortiles/shp/$$target ] || { echo NO TILES; exit 1; }
+	export z=$${z:-$(z)}
+	export group_by=$$(grep $$target $< | cut -f2)
 	export tmp=tmp.geojsonseq
 	#trap 'rm $$tmp 2>/dev/null' EXIT
-	export z=$${z:-$(z)}
-	export target=$$(cut -d. -f1 <<<$@)
-	export group_by=$$(grep $$target $< | cut -f2)
-	echo target $$target >/dev/tty
 	find compute.geodac.tw/vectortiles/shp/$${target}/$${z} -type f -name "*pbf" -size +1b | \
 	nl | \
 	while read num pbf; do
@@ -60,6 +62,7 @@ $(geojson): group_by
 	done | \
 	parallel -j8 bash -c >$$tmp
 	fields=$$(head -1 $$tmp | jq -r '.properties|keys[]' | tr '\n' ,)
+	set -x
 	ogr2ogr \
 		-dialect sqlite \
 		-sql "SELECT $${fields}ST_UNION(geometry) AS geometry from tmp GROUP BY $${group_by}" \
