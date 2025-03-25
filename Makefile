@@ -7,9 +7,9 @@ targets = VA18251 VA18252 VL00451 ORGANIC_FARMING
 .PHONY: group_by
 group_by:
 	cat <<EOF >$@
-		VA18251			p_docno,countyname
-		VA18252			p_docno,countyname
-		VL00451			name
+		VA18251	p_docno,countyname
+		VA18252	p_docno,countyname
+		VL00451	name
 		ORGANIC_FARMING	'地籍址'
 	EOF
 
