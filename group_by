@@ -1,4 +1,5 @@
 VA18251	p_docno,countyname
 VA18252	p_docno,countyname
+VA18254	swcb_plan
 VL00451	name
 ORGANIC_FARMING	'地籍址'
