@@ -2,13 +2,15 @@
 
 # TYPE: PBF tiles
 z=13
-targets = VA18251 VA18252 VA18254 VL00451 ORGANIC_FARMING
+targets = VA18251 VA18252 VA18254 VA18062 VA18062 VL00451 ORGANIC_FARMING
 
 .PHONY: group_by
 group_by:
 	cat <<EOF >$@
 		VA18251	p_docno,countyname
 		VA18252	p_docno,countyname
+		VA18254	swcb_plan
+		VA18064	gid
 		VL00451	name
 		ORGANIC_FARMING	'地籍址'
 	EOF
