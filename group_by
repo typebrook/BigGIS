@@ -2,5 +2,6 @@ VA18251	p_docno,countyname
 VA18252	p_docno,countyname
 VA18254	swcb_plan
 VA18064	gid
+NATIONAL_PARK	'分區代碼'
 VL00451	name
 ORGANIC_FARMING	'地籍址'
