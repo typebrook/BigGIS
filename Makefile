@@ -120,4 +120,3 @@ graph.svg:
 		--makefile ./Makefile \
 		--direction BT | \
 	dot -Tsvg -o $@
-
