@@ -15,9 +15,10 @@ while read line; do
         dir="$dir/$name"
     fi
     last=${#prefix}
-    echo "$dir"
+    echo mkdir -p "$dir"
   elif [[ $line =~ 'x$' ]]; then
     file="$(awk '{print $1}' <<<"$line")"
-    echo "$dir/$file"
+    echo mkdir -p "$dir/$file"
+    #echo touch "$dir/$file/.gitkeep"
   fi
 done
