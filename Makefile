@@ -120,3 +120,7 @@ graph.svg:
 		--makefile ./Makefile \
 		--direction BT | \
 	dot -Tsvg -o $@
+
+dir: list list.dir.sh
+	<$< ./$(word 2,$^) | xargs -i mkdir -p output/{}
+	find output -type d -empty | xargs -i touch {}/.gitkeep

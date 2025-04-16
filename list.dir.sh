@@ -1,24 +1,22 @@
 dir=
-cat list | \
 while read line; do
   if [[ $line =~ '#' ]]; then
     prefix=$(awk '{print $1}' <<<"$line")
     name="$(awk '{print $2}' <<<"$line")"
 
-    if [[ $prefix == '#' ]]; then
-      dir="output/$name"
+    if [ $prefix = '#' ]; then
+      dir="$name"
     elif [ ${#prefix} -eq ${last} ]; then
       dir="${dir%/*}/$name"
     elif [ ${#prefix} -lt ${last} ]; then
-      dir="$(echo "$dir" | cut -d'/' -f1-$((${#prefix}+1)) )/$name"
-      else
-        dir="$dir/$name"
+      dir="$(echo "$dir" | cut -d'/' -f1-$((${#prefix})) )/$name"
+    else
+      dir="$dir/$name"
     fi
     last=${#prefix}
-    echo mkdir -p "$dir"
-  elif [[ $line =~ 'x$' ]]; then
+    echo "$dir"
+  elif [[ "$line" =~ x$ ]]; then
     file="$(awk '{print $1}' <<<"$line")"
-    echo mkdir -p "$dir/$file"
-    #echo touch "$dir/$file/.gitkeep"
+    echo "$dir/$file"
   fi
 done
